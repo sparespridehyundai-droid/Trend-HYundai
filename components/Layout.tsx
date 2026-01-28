@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User } from '../types';
 
@@ -12,75 +11,73 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, currentUser, activeTab, setActiveTab, onLogout }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
-    { id: 'orders', label: 'New Order', icon: 'fa-plus-circle' },
-    { id: 'reports', label: 'Reports', icon: 'fa-file-invoice' },
-    { id: 'master', label: 'Master Data', icon: 'fa-database' },
+    { id: 'orders', label: 'Search', icon: 'fa-search' },
+    { id: 'dashboard', label: 'Stats', icon: 'fa-chart-pie' },
+    { id: 'reports', label: 'History', icon: 'fa-clock-rotate-left' },
+    { id: 'master', label: 'Data', icon: 'fa-database' },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 hyundai-blue text-white flex flex-col">
-        <div className="p-6 text-center border-b border-blue-800">
-          <h1 className="text-xl font-bold tracking-widest text-white">TREND <span className="text-blue-300">HYUNDAI</span></h1>
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#F5F5F5]">
+      {/* Desktop Sidebar (hidden on mobile) */}
+      <aside className="hidden md:flex w-64 bg-[#001D3D] text-white flex-col shrink-0 h-screen sticky top-0">
+        <div className="p-8 border-b border-white/10">
+          <h1 className="text-2xl font-black tracking-tight italic">Trend</h1>
+          <p className="text-[10px] text-[#E67E22] tracking-[0.3em] font-bold mt-1">SPARES</p>
         </div>
-        <nav className="flex-1 mt-6 px-4">
+        <nav className="flex-1 mt-8 px-4 space-y-2">
           {menuItems.map(item => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center px-4 py-3 mb-2 rounded-xl transition-all ${
+              className={`w-full flex items-center px-6 py-4 rounded-2xl transition-all ${
                 activeTab === item.id 
-                ? 'bg-blue-600 text-white shadow-lg' 
-                : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                ? 'bg-[#E67E22] text-white shadow-xl' 
+                : 'text-white/50 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <i className={`fas ${item.icon} w-6`}></i>
-              <span className="ml-3 font-medium">{item.label}</span>
+              <i className={`fas ${item.icon} w-6 text-center`}></i>
+              <span className="ml-4 font-black uppercase text-[11px] tracking-widest">{item.label}</span>
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-blue-800">
-          <div className="flex items-center p-3 rounded-xl bg-blue-900/50">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white">
-              {currentUser.userName.charAt(0)}
-            </div>
-            <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-bold truncate">{currentUser.userName}</p>
-              <p className="text-xs text-blue-300 capitalize">{currentUser.role}</p>
-            </div>
-            <button 
-              onClick={onLogout}
-              className="ml-auto text-blue-300 hover:text-white"
-              title="Logout"
-            >
-              <i className="fas fa-sign-out-alt"></i>
-            </button>
-          </div>
+        <div className="p-6">
+          <button 
+            onClick={onLogout}
+            className="w-full py-4 rounded-xl border border-white/10 text-white/40 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest"
+          >
+            Sign Out
+          </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-slate-50">
-        <header className="bg-white h-16 flex items-center px-8 border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-800 flex items-center capitalize">
-             <i className={`fas ${menuItems.find(m => m.id === activeTab)?.icon} mr-3 hyundai-gold`}></i>
-             {activeTab === 'dashboard' ? 'Overview' : activeTab.replace(/([A-Z])/g, ' $1')}
-          </h2>
-          <div className="ml-auto flex items-center space-x-4">
-             <span className="text-sm text-slate-500 font-medium">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-             <div className="h-6 w-px bg-slate-200"></div>
-             <button className="relative text-slate-400 hover:text-slate-600 transition-colors">
-                <i className="fas fa-bell"></i>
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-             </button>
-          </div>
-        </header>
-        <div className="p-8">
-          {children}
-        </div>
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-x-hidden">
+        {children}
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center px-4 py-3 z-40">
+        {menuItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`flex flex-col items-center gap-1 transition-all ${
+              activeTab === item.id ? 'text-[#E67E22]' : 'text-slate-400'
+            }`}
+          >
+            <i className={`fas ${item.icon} text-lg`}></i>
+            <span className="text-[10px] font-black uppercase tracking-tighter">{item.label}</span>
+          </button>
+        ))}
+        <button
+          onClick={onLogout}
+          className="flex flex-col items-center gap-1 text-slate-400"
+        >
+          <i className="fas fa-sign-out-alt text-lg"></i>
+          <span className="text-[10px] font-black uppercase tracking-tighter">Exit</span>
+        </button>
+      </nav>
     </div>
   );
 };

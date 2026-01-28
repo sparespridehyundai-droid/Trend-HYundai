@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User } from '../types';
 import { AUTH_USERS, DEFAULT_PASS } from '../constants';
@@ -19,66 +18,77 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     if (user && password === DEFAULT_PASS) {
       onLogin(user);
     } else {
-      setError('Invalid ID or Password. Default pass: hyundai2024');
+      setError('Invalid ID or Password.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full hyundai-blue mb-4">
-             <i className="fas fa-car-side text-white text-3xl"></i>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#102A43] px-10">
+      <div className="w-full max-w-sm space-y-16">
+        {/* Logo Section */}
+        <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center">
+            <span className="text-5xl font-bold text-white tracking-tighter">Trend</span>
+            <p className="text-[#E67E22] text-[13px] tracking-[0.4em] font-black uppercase mt-1">Spares</p>
           </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Trend Hyundai</h2>
-          <p className="mt-2 text-sm text-slate-600 font-medium">Parts Order Management System</p>
+          <p className="text-white/30 text-[9px] font-medium absolute top-8 right-8">
+             {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase()}, {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="user-id" className="block text-sm font-semibold text-slate-700">User ID (e.g. user01)</label>
-              <input
-                id="user-id"
-                name="userId"
-                type="text"
-                required
-                className="mt-1 block w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder="Enter your User ID"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              />
+
+        {/* Form Section */}
+        <form className="space-y-10" onSubmit={handleLogin}>
+          <div className="space-y-10">
+            {/* Username Field */}
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  className="w-full bg-transparent border border-white/40 rounded-lg px-5 py-4 text-white text-lg placeholder-white/30 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-all"
+                  placeholder="Username"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-start gap-1.5 px-1">
+                {[...Array(14)].map((_, i) => (
+                  <div key={i} className="w-1 h-1 rounded-full bg-white/20"></div>
+                ))}
+              </div>
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="mt-1 block w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+
+            {/* Password Field */}
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type="password"
+                  required
+                  className="w-full bg-transparent border border-white/40 rounded-lg px-5 py-4 text-white text-lg placeholder-white/30 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-all"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
+                    <span className="text-white/40 text-xs">••••</span>
+                </div>
+              </div>
             </div>
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100 animate-pulse">
-              <i className="fas fa-exclamation-circle mr-2"></i> {error}
-            </div>
+            <p className="text-orange-400 text-[10px] text-center font-black uppercase tracking-widest animate-pulse">{error}</p>
           )}
 
-          <button
-            type="submit"
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white hyundai-blue hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:scale-[1.02]"
-          >
-            Sign In
-          </button>
+          <div className="pt-4 flex justify-center">
+            <button
+                type="submit"
+                className="w-56 py-4 bg-[#E67E22] text-white text-xl font-bold rounded-full shadow-[0_10px_30px_rgba(230,126,34,0.3)] active:scale-95 transition-all transform hover:brightness-110"
+            >
+                Login
+            </button>
+          </div>
         </form>
-        <div className="text-center mt-6">
-          <p className="text-xs text-slate-400">Restricted to Trend Hyundai authorized personnel only.</p>
-        </div>
       </div>
     </div>
   );

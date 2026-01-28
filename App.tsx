@@ -11,12 +11,41 @@ import Reports from './components/Reports';
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('orders');
   const [masterData, setMasterData] = useState<Part[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Initialize with some data
+  // Initialize Data Persistence
   useEffect(() => {
+    // 1. Try to load Master Data from Local Storage first
+    const storedMaster = localStorage.getItem('trend_hyundai_master');
+    if (storedMaster) {
+      try {
+        const parsed = JSON.parse(storedMaster);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMasterData(parsed);
+        } else {
+          loadSampleData();
+        }
+      } catch (e) {
+        loadSampleData();
+      }
+    } else {
+      loadSampleData();
+    }
+
+    // 2. Load Orders from Local Storage
+    const storedOrders = localStorage.getItem('trend_hyundai_orders');
+    if (storedOrders) {
+      try {
+        setOrders(JSON.parse(storedOrders));
+      } catch (e) {
+        setOrders([]);
+      }
+    }
+  }, []);
+
+  const loadSampleData = () => {
     const parseCSV = (csv: string) => {
       const lines = csv.split('\n');
       const result: Part[] = [];
@@ -27,34 +56,33 @@ const App: React.FC = () => {
           partNo: cols[0].trim(),
           partName: cols[1].trim(),
           location: cols[2].trim(),
-          onHand: parseFloat(cols[3]),
-          dueIn: parseFloat(cols[4]),
-          onOrder: parseFloat(cols[5]),
-          amd3: parseFloat(cols[6]),
-          mav: parseFloat(cols[7]),
-          stkEff: parseFloat(cols[8]),
-          sysGenStock: parseFloat(cols[9])
+          onHand: parseFloat(cols[3]) || 0,
+          dueIn: parseFloat(cols[4]) || 0,
+          onOrder: parseFloat(cols[5]) || 0,
+          amd3: parseFloat(cols[6]) || 0,
+          mav: parseFloat(cols[7]) || 0,
+          stkEff: parseFloat(cols[8]) || 0,
+          sysGenStock: parseFloat(cols[9]) || 0
         });
       }
       return result;
     };
-    setMasterData(parseCSV(RAW_CSV_SAMPLE));
+    const sample = parseCSV(RAW_CSV_SAMPLE);
+    setMasterData(sample);
+    localStorage.setItem('trend_hyundai_master', JSON.stringify(sample));
+  };
 
-    // Load from local storage if exists
-    const storedOrders = localStorage.getItem('trend_hyundai_orders');
-    if (storedOrders) setOrders(JSON.parse(storedOrders));
-
-    const storedMaster = localStorage.getItem('trend_hyundai_master');
-    if (storedMaster) setMasterData(JSON.parse(storedMaster));
-  }, []);
-
+  // Persist Data whenever it changes
   useEffect(() => {
-    localStorage.setItem('trend_hyundai_orders', JSON.stringify(orders));
+    if (orders.length > 0) {
+      localStorage.setItem('trend_hyundai_orders', JSON.stringify(orders));
+    }
   }, [orders]);
 
-  useEffect(() => {
-    localStorage.setItem('trend_hyundai_master', JSON.stringify(masterData));
-  }, [masterData]);
+  const handleUpdateMaster = (newData: Part[]) => {
+    setMasterData(newData);
+    localStorage.setItem('trend_hyundai_master', JSON.stringify(newData));
+  };
 
   if (!currentUser) {
     return <Login onLogin={setCurrentUser} />;
@@ -73,11 +101,15 @@ const App: React.FC = () => {
           />
         );
       case 'master':
-        return <MasterData data={masterData} onUpdateData={setMasterData} />;
+        return <MasterData data={masterData} onUpdateData={handleUpdateMaster} />;
       case 'reports':
         return <Reports orders={orders} />;
       default:
-        return <Dashboard orders={orders} masterData={masterData} />;
+        return <OrderEntry 
+          masterData={masterData} 
+          user={currentUser} 
+          onAddOrder={(newOrder) => setOrders([newOrder, ...orders])} 
+        />;
     }
   };
 
