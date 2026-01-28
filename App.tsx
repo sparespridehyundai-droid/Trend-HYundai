@@ -15,18 +15,11 @@ const App: React.FC = () => {
   const [masterData, setMasterData] = useState<Part[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Initialize Data Persistence
   useEffect(() => {
-    // 1. Try to load Master Data from Local Storage first
     const storedMaster = localStorage.getItem('trend_hyundai_master');
     if (storedMaster) {
       try {
-        const parsed = JSON.parse(storedMaster);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMasterData(parsed);
-        } else {
-          loadSampleData();
-        }
+        setMasterData(JSON.parse(storedMaster));
       } catch (e) {
         loadSampleData();
       }
@@ -34,7 +27,6 @@ const App: React.FC = () => {
       loadSampleData();
     }
 
-    // 2. Load Orders from Local Storage
     const storedOrders = localStorage.getItem('trend_hyundai_orders');
     if (storedOrders) {
       try {
@@ -72,54 +64,32 @@ const App: React.FC = () => {
     localStorage.setItem('trend_hyundai_master', JSON.stringify(sample));
   };
 
-  // Persist Data whenever it changes
-  useEffect(() => {
-    if (orders.length > 0) {
-      localStorage.setItem('trend_hyundai_orders', JSON.stringify(orders));
-    }
-  }, [orders]);
-
-  const handleUpdateMaster = (newData: Part[]) => {
+  const handleUpdatePart = (updatedPart: Part) => {
+    const newData = masterData.map(p => p.partNo === updatedPart.partNo ? updatedPart : p);
     setMasterData(newData);
     localStorage.setItem('trend_hyundai_master', JSON.stringify(newData));
   };
 
-  if (!currentUser) {
-    return <Login onLogin={setCurrentUser} />;
-  }
+  const handleAddOrder = (newOrder: Order) => {
+    const updatedOrders = [newOrder, ...orders];
+    setOrders(updatedOrders);
+    localStorage.setItem('trend_hyundai_orders', JSON.stringify(updatedOrders));
+  };
+
+  if (!currentUser) return <Login onLogin={setCurrentUser} />;
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard orders={orders} masterData={masterData} />;
-      case 'orders':
-        return (
-          <OrderEntry 
-            masterData={masterData} 
-            user={currentUser} 
-            onAddOrder={(newOrder) => setOrders([newOrder, ...orders])} 
-          />
-        );
-      case 'master':
-        return <MasterData data={masterData} onUpdateData={handleUpdateMaster} />;
-      case 'reports':
-        return <Reports orders={orders} />;
-      default:
-        return <OrderEntry 
-          masterData={masterData} 
-          user={currentUser} 
-          onAddOrder={(newOrder) => setOrders([newOrder, ...orders])} 
-        />;
+      case 'dashboard': return <Dashboard orders={orders} masterData={masterData} />;
+      case 'orders': return <OrderEntry masterData={masterData} user={currentUser} onAddOrder={handleAddOrder} onUpdatePart={handleUpdatePart} />;
+      case 'master': return <MasterData data={masterData} onUpdateData={(d) => { setMasterData(d); localStorage.setItem('trend_hyundai_master', JSON.stringify(d)); }} />;
+      case 'reports': return <Reports orders={orders} masterData={masterData} />;
+      default: return <OrderEntry masterData={masterData} user={currentUser} onAddOrder={handleAddOrder} onUpdatePart={handleUpdatePart} />;
     }
   };
 
   return (
-    <Layout 
-      currentUser={currentUser} 
-      activeTab={activeTab} 
-      setActiveTab={setActiveTab} 
-      onLogout={() => setCurrentUser(null)}
-    >
+    <Layout currentUser={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={() => setCurrentUser(null)}>
       {renderContent()}
     </Layout>
   );
