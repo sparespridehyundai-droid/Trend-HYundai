@@ -1,0 +1,5 @@
+{
+  "name": "Trend Hyundai Parts Order",
+  "description": "A premium order management system for Hyundai parts featuring real-time XLOOKUP-style data population, multi-user authentication, and detailed reporting by date, vehicle, and user.",
+  "requestFramePermissions": []
+}
