@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User } from '../types';
 
@@ -23,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentUser, activeTab, setAc
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-72 bg-[#0F172A] text-white flex-col shrink-0 h-screen sticky top-0 border-r border-white/5 shadow-2xl">
         <div className="p-8 flex flex-col items-center border-b border-white/5">
-          <div className="w-16 h-16 bg-gradient-to-tr from-[#E67E22] to-[#F39C12] rounded-2xl flex items-center justify-center shadow-lg mb-4 rotate-3 group hover:rotate-0 transition-transform">
+          <div className="w-16 h-16 bg-gradient-to-tr from-[#E67E22] to-[#F39C12] rounded-2xl flex items-center justify-center shadow-lg mb-4 rotate-3 hover:rotate-0 transition-transform cursor-pointer">
              <span className="text-3xl font-black text-white">T</span>
           </div>
           <h1 className="text-xl font-black tracking-tight text-white uppercase italic">Trend</h1>
@@ -58,9 +57,18 @@ const Layout: React.FC<LayoutProps> = ({ children, currentUser, activeTab, setAc
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-x-hidden">
-        {children}
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-x-hidden pb-24 md:pb-0">
+        <div className="md:hidden bg-[#0F172A] p-4 flex justify-between items-center shadow-md">
+           <div className="flex items-center gap-2">
+             <div className="w-8 h-8 bg-[#E67E22] rounded-lg flex items-center justify-center text-white font-black">T</div>
+             <span className="text-white font-black text-sm uppercase tracking-widest">Trend Spares</span>
+           </div>
+           <span className="text-xs text-slate-400 font-bold">{currentUser.userName}</span>
+        </div>
+        <div className="p-4 md:p-8">
+          {children}
+        </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
